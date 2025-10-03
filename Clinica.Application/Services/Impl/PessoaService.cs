@@ -1,6 +1,7 @@
 ﻿using Clinica.Application.DTOs;
 using Clinica.Domain.Entities;
 using Clinica.Domain.Repositories;
+using Clinica.Application.Services;
 
 namespace Clinica.Application.Services.Impl;
 
