@@ -5,6 +5,8 @@ using Clinica.Domain.Repositories;
 using Clinica.Infrastructure.Data;
 using Clinica.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Clinica.Application.Queries;
+using Clinica.Infrastructure.Queries;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +23,7 @@ builder.Services.AddScoped<IConsultaRepository, ConsultaRepository>();
 // Serviços (isso resolve seu erro)
 builder.Services.AddScoped<IPessoaService, PessoaService>();
 builder.Services.AddScoped<IConsultaService, ConsultaService>();
+builder.Services.AddScoped<IConsultasQueryStore, ConsultasQueryStore>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

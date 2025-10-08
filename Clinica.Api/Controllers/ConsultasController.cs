@@ -1,6 +1,9 @@
 ﻿using Clinica.Application.DTOs;
 using Clinica.Application.Services;
 using Microsoft.AspNetCore.Mvc;
+using Clinica.Application.Queries;
+using Clinica.Domain.Entities;
+
 
 namespace Clinica.Api.Controllers;
 
@@ -11,22 +14,31 @@ public class ConsultasController : ControllerBase
     private readonly IConsultaService _svc;
     public ConsultasController(IConsultaService svc) => _svc = svc;
 
-    [HttpGet("{id:int}")]
-    public async Task<ActionResult<ConsultaDto>> Get(int id, CancellationToken ct)
+    [HttpGet("v2/{pessoaId:int}")]
+    public async Task<ActionResult<ConsultaPessoaViewDto>> GetConsultaViewV2(
+        [FromRoute] int pessoaId,
+        [FromServices] IConsultasQueryStore qs,
+        CancellationToken ct)
     {
-        var c = await _svc.GetAsync(id, ct);
-        return c is null ? NotFound() : Ok(c);
+        var dto = await qs.ListPessoaViewsAsync(pessoaId, ct);
+        return dto is null ? NotFound() : Ok(dto);
     }
 
-    [HttpGet("pessoa/{pessoaId:int}")]
-    public async Task<ActionResult<List<ConsultaDto>>> ListByPessoa(int pessoaId, CancellationToken ct)
-        => Ok(await _svc.ListByPessoaAsync(pessoaId, ct));
+    [HttpGet("v1/{pessoaId:int}")]
+    public async Task<ActionResult<List<ConsultaDto>>> ListByPessoaV1(
+        [FromRoute] int pessoaId,
+        CancellationToken ct)
+    {
+        var list = await _svc.ListByPessoaAsync(pessoaId, ct);
+        return Ok(list);
+    }
+
 
     [HttpPost]
     public async Task<ActionResult<ConsultaDto>> Create([FromBody] CreateConsultaRequest req, CancellationToken ct)
     {
         var created = await _svc.CreateAsync(req, ct);
-        return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
+        return CreatedAtAction(nameof(GetConsultaViewV2), new { id = created.Id }, created);
     }
 
     [HttpPut("{id:int}")]
